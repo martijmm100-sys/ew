@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EW and Calories</title>
+  <meta name="description" content="A private browser-based EW tracker and calorie counter. Data stays in your browser." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to app</a>
+
+  <header class="hero">
+    <div class="flower-field" aria-hidden="true">
+      <span>✿</span><span>❀</span><span>🌸</span><span>✾</span><span>❁</span>
+    </div>
+    <p class="eyebrow">Private browser tracker</p>
+    <h1>EW <span>&amp;</span> Calories</h1>
+    <p class="tagline">Soft, simple tracking for EW days, food, water, weight, and goals.</p>
+    <div class="hero-actions">
+      <button class="primary-btn" data-open-tab="ew">Log EW</button>
+      <button class="secondary-btn" data-open-tab="calories">Add Food</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Main sections">
+    <button class="tab active" data-tab="dashboard" aria-selected="true">Dashboard</button>
+    <button class="tab" data-tab="ew" aria-selected="false">EW Tracker</button>
+    <button class="tab" data-tab="calories" aria-selected="false">Calories</button>
+    <button class="tab" data-tab="goals" aria-selected="false">Goals</button>
+    <button class="tab" data-tab="data" aria-selected="false">Data</button>
+  </nav>
+
+  <main id="main">
+    <section id="dashboard" class="panel active" aria-labelledby="dashboard-title">
+      <div class="section-title">
+        <p class="eyebrow">Today</p>
+        <h2 id="dashboard-title">Your gentle dashboard</h2>
+      </div>
+
+      <div class="notice medical">
+        <strong>Reminder:</strong> EW predictions, calorie totals, goals, and wellness estimates are informational only and are not medical advice.
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="card highlight-card">
+          <div class="card-top">
+            <h3>EW Reminder</h3>
+            <span class="flower-badge" aria-hidden="true">🌷</span>
+          </div>
+          <p id="ewReminderText" class="big-message">Add at least one EW entry to begin predictions.</p>
+          <div id="ewStats" class="tiny-grid"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3>Calories Today</h3>
+            <span class="flower-badge" aria-hidden="true">🌺</span>
+          </div>
+          <div class="meter-row">
+            <progress id="calorieProgress" value="0" max="100"></progress>
+            <span id="calorieProgressLabel">0 / 0</span>
+          </div>
+          <div class="tiny-grid" id="macroTotals"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-top">
+            <h3>Water Today</h3>
+            <span class="flower-badge" aria-hidden="true">💧</span>
+          </div>
+          <div class="meter-row">
+            <progress id="waterProgress" value="0" max="100"></progress>
+            <span id="waterProgressLabel">0 / 0 oz</span>
+          </div>
+          <form id="quickWaterForm" class="inline-form">
+            <label for="quickWaterAmount">Add water</label>
+            <div class="inline-control">
+              <input id="quickWaterAmount" type="number" inputmode="decimal" min="0" step="1" value="8" />
+              <button type="submit">Add oz</button>
+            </div>
+          </form>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-top">
+          <h3>Recent activity</h3>
+          <span class="flower-badge" aria-hidden="true">✿</span>
+        </div>
+        <ul id="recentActivity" class="activity-list"></ul>
+      </article>
+    </section>
+
+    <section id="ew" class="panel" aria-labelledby="ew-title">
+      <div class="section-title">
+        <p class="eyebrow">EW tracker</p>
+        <h2 id="ew-title">Log EW details</h2>
+      </div>
+
+      <div class="soft-grid">
+        <form id="ewForm" class="card form-card">
+          <input type="hidden" id="ewId" />
+          <div class="form-row two">
+            <label>
+              EW start date
+              <input id="ewStartDate" type="date" required />
+            </label>
+            <label>
+              EW end date
+              <input id="ewEndDate" type="date" />
+            </label>
+          </div>
+
+          <div class="form-row three">
+            <label>
+              Flow
+              <select id="ewFlow">
+                <option value="">Select</option>
+                <option>Spotting</option>
+                <option>Light</option>
+                <option>Medium</option>
+                <option>Heavy</option>
+              </select>
+            </label>
+            <label>
+              Cramps
+              <select id="ewCramps">
+                <option value="">Select</option>
+                <option>None</option>
+                <option>Mild</option>
+                <option>Moderate</option>
+                <option>Strong</option>
+              </select>
+            </label>
+            <label>
+              Mood
+              <select id="ewMood">
+                <option value="">Select</option>
+                <option>Calm</option>
+                <option>Happy</option>
+                <option>Tired</option>
+                <option>Emotional</option>
+                <option>Irritable</option>
+                <option>Anxious</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Symptoms</legend>
+            <div class="chips">
+              <label><input type="checkbox" name="symptoms" value="Bloating" /> Bloating</label>
+              <label><input type="checkbox" name="symptoms" value="Headache" /> Headache</label>
+              <label><input type="checkbox" name="symptoms" value="Back pain" /> Back pain</label>
+              <label><input type="checkbox" name="symptoms" value="Cravings" /> Cravings</label>
+              <label><input type="checkbox" name="symptoms" value="Acne" /> Acne</label>
+              <label><input type="checkbox" name="symptoms" value="Tenderness" /> Tenderness</label>
+              <label><input type="checkbox" name="symptoms" value="Low energy" /> Low energy</label>
+              <label><input type="checkbox" name="symptoms" value="Nausea" /> Nausea</label>
+            </div>
+          </fieldset>
+
+          <label>
+            Notes
+            <textarea id="ewNotes" rows="4" placeholder="Add private notes saved only in this browser."></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Save EW Entry</button>
+            <button type="button" id="resetEwForm" class="secondary-btn">Reset</button>
+          </div>
+        </form>
+
+        <aside class="card">
+          <div class="card-top">
+            <h3>EW predictions</h3>
+            <span class="flower-badge" aria-hidden="true">🌼</span>
+          </div>
+          <div id="predictionPanel" class="prediction-list"></div>
+          <p class="fine-print">Predictions improve after several EW entries. Estimates are not medical advice.</p>
+        </aside>
+      </div>
+
+      <article class="card">
+        <div class="card-top">
+          <h3>EW history</h3>
+          <span class="flower-badge" aria-hidden="true">🌸</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Flow</th>
+                <th>Cramps</th>
+                <th>Mood</th>
+                <th>Symptoms</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ewTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="calories" class="panel" aria-labelledby="calories-title">
+      <div class="section-title">
+        <p class="eyebrow">Calories</p>
+        <h2 id="calories-title">Manual food log</h2>
+      </div>
+
+      <div class="soft-grid">
+        <form id="foodForm" class="card form-card">
+          <input type="hidden" id="foodId" />
+          <div class="form-row two">
+            <label>
+              Date
+              <input id="foodDate" type="date" required />
+            </label>
+            <label>
+              Food name
+              <input id="foodName" type="text" required placeholder="Example: Greek yogurt" list="foodSuggestions" />
+              <datalist id="foodSuggestions"></datalist>
+            </label>
+          </div>
+
+          <div class="form-row four">
+            <label>
+              Calories
+              <input id="foodCalories" type="number" inputmode="decimal" min="0" step="1" required />
+            </label>
+            <label>
+              Protein g
+              <input id="foodProtein" type="number" inputmode="decimal" min="0" step="0.1" />
+            </label>
+            <label>
+              Carbs g
+              <input id="foodCarbs" type="number" inputmode="decimal" min="0" step="0.1" />
+            </label>
+            <label>
+              Fat g
+              <input id="foodFat" type="number" inputmode="decimal" min="0" step="0.1" />
+            </label>
+          </div>
+
+          <label>
+            Meal
+            <select id="foodMeal">
+              <option>Breakfast</option>
+              <option>Lunch</option>
+              <option>Dinner</option>
+              <option>Snack</option>
+              <option>Drink</option>
+            </select>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Save Food</button>
+            <button type="button" id="resetFoodForm" class="secondary-btn">Reset</button>
+          </div>
+        </form>
+
+        <aside class="card">
+          <div class="card-top">
+            <h3>Food database later</h3>
+            <span class="flower-badge" aria-hidden="true">🌹</span>
+          </div>
+          <p>This first version uses manual food entry plus a tiny local suggestion list. The code is structured so a searchable food API/database can be added later.</p>
+          <label>
+            Quick food search
+            <input id="foodSearch" type="search" placeholder="Search starter foods..." />
+          </label>
+          <ul id="foodSearchResults" class="result-list"></ul>
+        </aside>
+      </div>
+
+      <article class="card">
+        <div class="card-top">
+          <h3>Food log</h3>
+          <span class="flower-badge" aria-hidden="true">✾</span>
+        </div>
+        <div class="filter-bar">
+          <label>
+            View date
+            <input id="foodFilterDate" type="date" />
+          </label>
+          <button id="showAllFood" class="secondary-btn" type="button">Show All</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Meal</th>
+                <th>Food</th>
+                <th>Cal</th>
+                <th>Protein</th>
+                <th>Carbs</th>
+                <th>Fat</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="foodTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="goals" class="panel" aria-labelledby="goals-title">
+      <div class="section-title">
+        <p class="eyebrow">Personal targets</p>
+        <h2 id="goals-title">Goals and reminders</h2>
+      </div>
+
+      <form id="goalsForm" class="card form-card">
+        <div class="form-row four">
+          <label>
+            Daily calorie goal
+            <input id="goalCalories" type="number" inputmode="decimal" min="0" step="1" />
+          </label>
+          <label>
+            Water goal, oz/day
+            <input id="goalWater" type="number" inputmode="decimal" min="0" step="1" />
+          </label>
+          <label>
+            Weight goal
+            <input id="goalWeight" type="number" inputmode="decimal" min="0" step="0.1" />
+          </label>
+          <label>
+            EW reminder days before
+            <input id="goalReminderDays" type="number" inputmode="numeric" min="0" max="14" step="1" />
+          </label>
+        </div>
+
+        <div class="form-row three">
+          <label>
+            Protein goal, g/day
+            <input id="goalProtein" type="number" inputmode="decimal" min="0" step="1" />
+          </label>
+          <label>
+            Carb goal, g/day
+            <input id="goalCarbs" type="number" inputmode="decimal" min="0" step="1" />
+          </label>
+          <label>
+            Fat goal, g/day
+            <input id="goalFat" type="number" inputmode="decimal" min="0" step="1" />
+          </label>
+        </div>
+
+        <div class="form-row two">
+          <label>
+            Current weight date
+            <input id="weightDate" type="date" />
+          </label>
+          <label>
+            Current weight
+            <input id="currentWeight" type="number" inputmode="decimal" min="0" step="0.1" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary-btn">Save Goals</button>
+        </div>
+      </form>
+
+      <article class="card">
+        <div class="card-top">
+          <h3>Weight log</h3>
+          <span class="flower-badge" aria-hidden="true">🌻</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Weight</th>
+                <th>Goal gap</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="weightTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="data" class="panel" aria-labelledby="data-title">
+      <div class="section-title">
+        <p class="eyebrow">Backup</p>
+        <h2 id="data-title">Export, import, and privacy</h2>
+      </div>
+
+      <div class="data-grid">
+        <article class="card">
+          <h3>Export your data</h3>
+          <p>Download a backup from this browser. Keep exported files private because they may contain personal wellness notes.</p>
+          <div class="button-stack">
+            <button id="exportJson" class="primary-btn" type="button">Export JSON Backup</button>
+            <button id="exportEwCsv" class="secondary-btn" type="button">Export EW CSV</button>
+            <button id="exportFoodCsv" class="secondary-btn" type="button">Export Food CSV</button>
+            <button id="exportWeightCsv" class="secondary-btn" type="button">Export Weight CSV</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Import backup</h3>
+          <p>Restore a JSON backup created by this app. This replaces the data currently saved in this browser.</p>
+          <label class="file-label">
+            Choose JSON backup
+            <input id="importJson" type="file" accept="application/json,.json" />
+          </label>
+        </article>
+
+        <article class="card danger-zone">
+          <h3>Clear browser data</h3>
+          <p>This removes all EW, food, water, weight, and goal data from this browser only.</p>
+          <button id="clearData" class="danger-btn" type="button">Clear All Local Data</button>
+        </article>
+      </div>
+
+      <article class="notice privacy">
+        <strong>Privacy note:</strong> This app stores data in browser storage on this device. It does not create accounts, does not send data to a server, and does not sync between browsers. Browser storage is not encrypted, so avoid using it on shared devices.
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>EW and Calories · local-only browser app · no accounts · no medical advice</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
